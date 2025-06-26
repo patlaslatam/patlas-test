@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Test de Personalidad</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Futura+Handwritten&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Boogaloo', sans-serif;
+    background: url("/fondo.jpg") no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    color: #1B1D29;
+  }
+
+  #quiz-container {
+    background: rgba(240, 246, 246, 0.95);
+    border: 3px solid #1B1D29;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .options {
+    display: grid;
+    gap: 1rem;
+  }
+
+  button.option-button {
+    background-color: #1B1D29;
+    color: #F0F6F6;
+    font-family: 'Futura Handwritten', cursive;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  button.option-button:hover {
+    background-color: #FDC60B;
+    color: #1B1D29;
+  }
+
+  #progress-bar {
+    background-color: #ddd;
+    height: 10px;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  #progress-fill {
+    height: 100%;
+    background-color: #1B1D29;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  #result-image {
+    display: block;
+    max-width: 250px;
+    margin: 1rem auto;
+    border-radius: 12px;
+  }
+
+  #reset-button {
+    background-color: #1B1D29;
+    color: #F0F6F6;
+    font-family: 'Futura Handwritten', cursive;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: block;
+    margin: 1.5rem auto 0 auto;
+  }
+  #reset-button:hover {
+    background-color: #FDC60B;
+    color: #1B1D29;
+  }
+</style>
+</head>
+<body>
+
+<div id="quiz-container">
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <h2 id="question-text"></h2>
+  <div class="options" id="options-container"></div>
+  <div style="text-align: center; margin-top: 1rem;">
+  <button id="back-button" class="option-button"> Volver a la anterior</button>
+</div>
+
+  <div id="result" style="display:none; text-align:center;">
+    <h2>Tu personaje es:</h2>
+    <p id="result-name" style="font-family: 'Futura Handwritten', cursive; font-size: 1.5rem; margin-bottom: 1rem;"></p>
+    <img id="result-image" src="" alt="Imagen del personaje" />
+    <p id="result-description" style="margin-top: 1rem;"></p>
+</script>
+
+    <button id="reset-button">Volver a jugar</button>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      question: "¿Cuál es el plan favorito de tu mascota para un día libre?",
+      options: [
+        "Pasear y visitar a sus seres queridos.",
+        "Entrenar y jugar todo el día.",
+        "Quedarse en casa y relajarse.",
+        "Salir a explorar el barrio sin rumbo fijo."
+      ],
+    },
+    {
+      question: "¿Cómo se siente respecto a viajar?",
+      options: [
+        "Le encanta moverse por la ciudad y el campo.",
+        "Ama conocer nuevos lugares del mundo.",
+        "Prefiere quedarse en casa.",
+        "Adora pasear por su cuenta por la ciudad."
+      ],
+    },
+    {
+      question: "¿Le gusta jugar?",
+      options: [
+        "Si, siempre juega pero no presta sus juguetes",
+        "¡Adora jugar siempre!",
+        "Solo si está de humor.",
+        "Juega solo con sus humanos de confianza"
+      ],
+    },
+    {
+      question: "¿Cuál es su medio de transporte favorito para viajar?",
+      options: [
+        "Un auto cómodo que recorre la ciudad y el campo con la familia.",
+        "Un avión que cruza fronteras.",
+        "Un sillón... que no se mueve.",
+        "cuatro patas que vayan por las calles sin reglas ni destino."
+      ],
+    },
+    {
+      question: "¿Cómo es con las personas que lo rodean?",
+      options: [
+        "Cariñoso y juguetón.",
+        "Sociable y competitivo.",
+        "Independiente, manda él.",
+        "Reservado pero leal."
+      ],
+    },
+    {
+      question: "¿Qué piensa sobre el espacio personal?",
+      options: [
+        "No existe, siempre está buscando mimos.",
+        "No es muy importante, siempre se adapta a las situaciones.",
+        "Es sagrado, no lo invadas si querés vivir.",
+        "Depende de quien seas."
+      ],
+    },
+    
+  ];
+
+  const results = {
+    A: "MILANESA",
+    B: "FRANCIS",
+    C: "KLEO",
+    D: "SAKURA",
+  };
+
+  const descriptions = {
+    MILANESA: "Tu mascota AMA pasear por la ciudad y seguirte a donde sea que vayas, se adapta a cualquier vehículo y actividad con la condición de acompañarte. Para ellos elegí nuestros bocaditos saludables, hogar portátil o la cama bolso!",
+    FRANCIS: "Tu mascota es un verdadero atleta: activo, curioso y siempre listo para una nueva misión. Le encanta aprender trucos, correr al aire libre y demostrar todo lo que sabe, ¡especialmente si hay premios de por medio! Para ellos elegí nuestros bocaditos saludables, cama ortopédica convertible en bolso y el hogar portátil.",
+    KLEO: "Tu mascota es reina de su hogar: selectiva, elegante y con carácter. No necesita salir para vivir grandes aventuras; le basta con su sillón favorito, buena comida y algo para rascar. Para ellos elegí nuestra cama ortopédica, juguetes interactivos o bocaditos saludables.",
+    SAKURA: "Tu mascota es una exploradora nata. Le encanta recorrer la ciudad a su ritmo, pero siempre vuelve por las siestas largas y los mimos. Se adapta al caos callejero pero ama su rincón seguro. Para ellos elegí nuestro collar gps con sensores, bocaditos saludables y cama ortopédica.",
+  };
+
+  const images = {
+    MILANESA: "/milanesa.png",
+    FRANCIS: "/francis.png",
+    KLEO: "/kleo.png",
+    SAKURA: "/sakura.png",
+  };
+
+  let currentQuestion = 0;
+  let answers = [];
+
+  const questionText = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const progressFill = document.getElementById('progress-fill');
+  const resultDiv = document.getElementById('result');
+  const resultName = document.getElementById('result-name');
+  const resultDescription = document.getElementById('result-description');
+  const resultImage = document.getElementById('result-image');
+  const resetButton = document.getElementById('reset-button');
+
+  function showQuestion() {
+  resultDiv.style.display = 'none';
+  questionText.textContent = questions[currentQuestion].question;
+  optionsContainer.innerHTML = '';
+
+  questions[currentQuestion].options.forEach((option, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-button';
+    btn.textContent = option;
+    btn.addEventListener('click', () => handleAnswer(index));
+    optionsContainer.appendChild(btn);
+  });
+
+  const progressPercent = ((currentQuestion) / questions.length) * 100;
+  progressFill.style.width = `${progressPercent}%`;
+
+  // Mostrar u ocultar el botón atrás
+  backButton.style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+}
+
+  function handleAnswer(optionIndex) {
+    // Guardar respuesta (A,B,C o D)
+    const answerLetter = String.fromCharCode(65 + optionIndex);
+    answers.push(answerLetter);
+
+    currentQuestion++;
+
+    if (currentQuestion >= questions.length) {
+      showResult();
+    } else {
+      showQuestion();
+    }
+  }
+
+  function showResult() {
+    // Calcular resultado
+    const counts = { A: 0, B: 0, C: 0, D: 0 };
+    answers.forEach(ans => counts[ans]++);
+
+    let maxKey = 'A';
+    for (const key in counts) {
+      if (counts[key] > counts[maxKey]) maxKey = key;
+    }
+
+    const character = results[maxKey];
+
+    // Mostrar resultado
+    questionText.textContent = '';
+    optionsContainer.innerHTML = '';
+    progressFill.style.width = '100%';
+
+    resultName.textContent = character;
+    resultDescription.textContent = descriptions[character];
+    resultImage.src = images[character];
+    resultImage.alt = `Imagen de ${character}`;
+
+    backButton.style.display = 'none';
+    resultDiv.style.display = 'block';
+  }
+
+  resetButton.addEventListener('click', () => {
+    currentQuestion = 0;
+    answers = [];
+    progressFill.style.width = '0%';
+    showQuestion();
+  });
+  const backButton = document.getElementById('back-button');
+
+backButton.addEventListener('click', () => {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    answers.pop(); // Elimina la última respuesta
+    showQuestion();
+  }
+});
+
+
+  // Iniciar quiz
+  showQuestion();
+</script>
+
+</body>
+</html>
